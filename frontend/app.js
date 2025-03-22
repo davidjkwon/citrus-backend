@@ -8,7 +8,7 @@ socket.on('message', text => {
     document.querySelector('ul').appendChild(el)
 
 });
-socket.on('location', (data) => {
+socket.on('userLocation', (data) => {
     document.getElementById('response').innerText = data.message;
 });
 
@@ -17,7 +17,7 @@ function sendLocation() {
     const longitude = document.getElementById('longitude').value;
 
     if (latitude && longitude) {
-        socket.emit('location', { latitude, longitude });
+        socket.emit('userLocation', { latitude, longitude });
     } else {
         alert('Please enter both latitude and longitude');
     }
