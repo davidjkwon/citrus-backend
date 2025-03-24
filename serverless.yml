@@ -1,0 +1,19 @@
+service: CitrusWebsocket
+
+provider:
+    name: aws
+    runtime: nodejs12.x
+    profile: serverlessUser
+    region: na-east-1
+    environment:
+        tableName: ${self:custom.tableName}
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+              - dynamodb:*
+          Resource: '*'
+    
+custom:
+    tableName: CitrusUsers
+    
+functions:
