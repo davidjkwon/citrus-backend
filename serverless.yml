@@ -1,12 +1,16 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: citruswebsocket
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: citrus
 service: CitrusWebsocket
 
 provider:
     name: aws
-    runtime: nodejs12.x
-    profile: serverlessUser
-    region: na-east-1
+    runtime: nodejs22.x
+    region: us-east-1
     environment:
-        tableName: ${self:custom.tableName}
+        userTable: ${self:custom.userTable}
+        locationTable: ${self:custom.locationTable}
     iamRoleStatements:
         - Effect: Allow
           Action:
@@ -14,6 +18,60 @@ provider:
           Resource: '*'
     
 custom:
-    tableName: CitrusUsers
-    
+    userTable: CitrusUsers
+    locationTable: CitrusLocations
+
 functions:
+    websocket-connect:
+        handler: lambdas/websockets/connect.handler
+        events:
+            - websocket:
+                route: $connect
+    websocket-disconnect:
+        handler: lambdas/websockets/disconnect.handler
+        events:
+            - websocket:
+                route: $disconnect
+    websocket-default:
+        handler: lambdas/websockets/default.handler
+        events:
+            - websocket:
+                route: $default
+    websocket-message:
+        handler: lambdas/websockets/message.handler
+        events:
+            - websocket:
+                route: message
+    websocket-location:
+        handler: lambdas/websockets/sendLocation.handler
+        events:
+            - websocket:
+                route: location
+resources:
+    Resources:
+        CitrusUsersTable:
+            Type: AWS::DynamoDB::Table
+            Properties:
+                TableName: ${self:custom.userTable}
+                AttributeDefinitions:
+                    - AttributeName: ID
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: ID
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 5
+                    WriteCapacityUnits: 5
+        CitrusLocationsTable:
+            Type: AWS::DynamoDB::Table
+            Properties:
+                TableName: ${self:custom.locationTable}
+                AttributeDefinitions:
+                    - AttributeName: ID
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: ID
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 5
+                    WriteCapacityUnits: 5

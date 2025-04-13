@@ -1,0 +1,1033 @@
+{
+  "service": {
+    "service": "CitrusWebsocket",
+    "serviceObject": {
+      "name": "CitrusWebsocket"
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs22.x",
+      "region": "us-east-1",
+      "environment": {
+        "userTable": "CitrusUsers",
+        "locationTable": "CitrusLocations"
+      },
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:*"
+          ],
+          "Resource": "*"
+        }
+      ],
+      "stage": "dev",
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "WebsocketDashconnectLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/CitrusWebsocket-dev-websocket-connect"
+            }
+          },
+          "WebsocketDashdisconnectLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/CitrusWebsocket-dev-websocket-disconnect"
+            }
+          },
+          "WebsocketDashdefaultLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/CitrusWebsocket-dev-websocket-default"
+            }
+          },
+          "WebsocketDashmessageLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/CitrusWebsocket-dev-websocket-message"
+            }
+          },
+          "WebsocketDashlocationLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/CitrusWebsocket-dev-websocket-location"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "CitrusWebsocket",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/CitrusWebsocket-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/CitrusWebsocket-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "execute-api:ManageConnections"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:execute-api:*:*:*/@connections/*"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "CitrusWebsocket",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "WebsocketDashconnectLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-91978bc0-8d20",
+                "S3Key": "serverless/CitrusWebsocket/dev/1744572018127-2025-04-13T19:20:18.127Z/CitrusWebsocket.zip"
+              },
+              "Handler": "lambdas/websockets/connect.handler",
+              "Runtime": "nodejs22.x",
+              "FunctionName": "CitrusWebsocket-dev-websocket-connect",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "userTable": "CitrusUsers",
+                  "locationTable": "CitrusLocations"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "WebsocketDashconnectLogGroup"
+            ]
+          },
+          "WebsocketDashdisconnectLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-91978bc0-8d20",
+                "S3Key": "serverless/CitrusWebsocket/dev/1744572018127-2025-04-13T19:20:18.127Z/CitrusWebsocket.zip"
+              },
+              "Handler": "lambdas/websockets/disconnect.handler",
+              "Runtime": "nodejs22.x",
+              "FunctionName": "CitrusWebsocket-dev-websocket-disconnect",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "userTable": "CitrusUsers",
+                  "locationTable": "CitrusLocations"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "WebsocketDashdisconnectLogGroup"
+            ]
+          },
+          "WebsocketDashdefaultLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-91978bc0-8d20",
+                "S3Key": "serverless/CitrusWebsocket/dev/1744572018127-2025-04-13T19:20:18.127Z/CitrusWebsocket.zip"
+              },
+              "Handler": "lambdas/websockets/default.handler",
+              "Runtime": "nodejs22.x",
+              "FunctionName": "CitrusWebsocket-dev-websocket-default",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "userTable": "CitrusUsers",
+                  "locationTable": "CitrusLocations"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "WebsocketDashdefaultLogGroup"
+            ]
+          },
+          "WebsocketDashmessageLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-91978bc0-8d20",
+                "S3Key": "serverless/CitrusWebsocket/dev/1744572018127-2025-04-13T19:20:18.127Z/CitrusWebsocket.zip"
+              },
+              "Handler": "lambdas/websockets/message.handler",
+              "Runtime": "nodejs22.x",
+              "FunctionName": "CitrusWebsocket-dev-websocket-message",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "userTable": "CitrusUsers",
+                  "locationTable": "CitrusLocations"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "WebsocketDashmessageLogGroup"
+            ]
+          },
+          "WebsocketDashlocationLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-91978bc0-8d20",
+                "S3Key": "serverless/CitrusWebsocket/dev/1744572018127-2025-04-13T19:20:18.127Z/CitrusWebsocket.zip"
+              },
+              "Handler": "lambdas/websockets/sendLocation.handler",
+              "Runtime": "nodejs22.x",
+              "FunctionName": "CitrusWebsocket-dev-websocket-location",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "userTable": "CitrusUsers",
+                  "locationTable": "CitrusLocations"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "WebsocketDashlocationLogGroup"
+            ]
+          },
+          "WebsocketDashconnectLambdaVersionipcXSrcKMSAySw7WJTUrND1K6NF42kl6WP7L6220": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "WebsocketDashconnectLambdaFunction"
+              },
+              "CodeSha256": "BBjRmJPZu9lfEya62dtgXkvs9ouiw8MJYu0gOyTM0aY="
+            }
+          },
+          "WebsocketDashdisconnectLambdaVersionOLBDejRxUu94sKZmDhIOcycH4PC0H2aGFJTd6TsQY": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "WebsocketDashdisconnectLambdaFunction"
+              },
+              "CodeSha256": "BBjRmJPZu9lfEya62dtgXkvs9ouiw8MJYu0gOyTM0aY="
+            }
+          },
+          "WebsocketDashdefaultLambdaVersiondeAc0oDZY7nRTkFYZKJi3qqPrmOMVKxhvxxmuB1crk": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "WebsocketDashdefaultLambdaFunction"
+              },
+              "CodeSha256": "BBjRmJPZu9lfEya62dtgXkvs9ouiw8MJYu0gOyTM0aY="
+            }
+          },
+          "WebsocketDashmessageLambdaVersion0HTUVGUZwg4iMvWN6ucu5MsRmQNGkFhYydyeSpUzg": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "WebsocketDashmessageLambdaFunction"
+              },
+              "CodeSha256": "BBjRmJPZu9lfEya62dtgXkvs9ouiw8MJYu0gOyTM0aY="
+            }
+          },
+          "WebsocketDashlocationLambdaVersioneZQwtWuj7jRCOCm89C5tzjN0q0pO26iBGBXexU8tvmo": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "WebsocketDashlocationLambdaFunction"
+              },
+              "CodeSha256": "BBjRmJPZu9lfEya62dtgXkvs9ouiw8MJYu0gOyTM0aY="
+            }
+          },
+          "WebsocketsApi": {
+            "Type": "AWS::ApiGatewayV2::Api",
+            "Properties": {
+              "Name": "dev-CitrusWebsocket-websockets",
+              "RouteSelectionExpression": "$request.body.action",
+              "Description": "Serverless Websockets",
+              "ProtocolType": "WEBSOCKET"
+            }
+          },
+          "WebsocketDashconnectWebsocketsIntegration": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":apigateway:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":lambda:path/2015-03-31/functions/",
+                    {
+                      "Fn::GetAtt": [
+                        "WebsocketDashconnectLambdaFunction",
+                        "Arn"
+                      ]
+                    },
+                    "/invocations"
+                  ]
+                ]
+              }
+            }
+          },
+          "WebsocketDashdisconnectWebsocketsIntegration": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":apigateway:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":lambda:path/2015-03-31/functions/",
+                    {
+                      "Fn::GetAtt": [
+                        "WebsocketDashdisconnectLambdaFunction",
+                        "Arn"
+                      ]
+                    },
+                    "/invocations"
+                  ]
+                ]
+              }
+            }
+          },
+          "WebsocketDashdefaultWebsocketsIntegration": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":apigateway:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":lambda:path/2015-03-31/functions/",
+                    {
+                      "Fn::GetAtt": [
+                        "WebsocketDashdefaultLambdaFunction",
+                        "Arn"
+                      ]
+                    },
+                    "/invocations"
+                  ]
+                ]
+              }
+            }
+          },
+          "WebsocketDashmessageWebsocketsIntegration": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":apigateway:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":lambda:path/2015-03-31/functions/",
+                    {
+                      "Fn::GetAtt": [
+                        "WebsocketDashmessageLambdaFunction",
+                        "Arn"
+                      ]
+                    },
+                    "/invocations"
+                  ]
+                ]
+              }
+            }
+          },
+          "WebsocketDashlocationWebsocketsIntegration": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":apigateway:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":lambda:path/2015-03-31/functions/",
+                    {
+                      "Fn::GetAtt": [
+                        "WebsocketDashlocationLambdaFunction",
+                        "Arn"
+                      ]
+                    },
+                    "/invocations"
+                  ]
+                ]
+              }
+            }
+          },
+          "WebsocketDashconnectLambdaPermissionWebsockets": {
+            "Type": "AWS::Lambda::Permission",
+            "DependsOn": [
+              "WebsocketsApi",
+              "WebsocketDashconnectLambdaFunction"
+            ],
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "WebsocketDashconnectLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com"
+            }
+          },
+          "WebsocketDashdisconnectLambdaPermissionWebsockets": {
+            "Type": "AWS::Lambda::Permission",
+            "DependsOn": [
+              "WebsocketsApi",
+              "WebsocketDashdisconnectLambdaFunction"
+            ],
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "WebsocketDashdisconnectLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com"
+            }
+          },
+          "WebsocketDashdefaultLambdaPermissionWebsockets": {
+            "Type": "AWS::Lambda::Permission",
+            "DependsOn": [
+              "WebsocketsApi",
+              "WebsocketDashdefaultLambdaFunction"
+            ],
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "WebsocketDashdefaultLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com"
+            }
+          },
+          "WebsocketDashmessageLambdaPermissionWebsockets": {
+            "Type": "AWS::Lambda::Permission",
+            "DependsOn": [
+              "WebsocketsApi",
+              "WebsocketDashmessageLambdaFunction"
+            ],
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "WebsocketDashmessageLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com"
+            }
+          },
+          "WebsocketDashlocationLambdaPermissionWebsockets": {
+            "Type": "AWS::Lambda::Permission",
+            "DependsOn": [
+              "WebsocketsApi",
+              "WebsocketDashlocationLambdaFunction"
+            ],
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "WebsocketDashlocationLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com"
+            }
+          },
+          "SconnectWebsocketsRoute": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "RouteKey": "$connect",
+              "AuthorizationType": "NONE",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "WebsocketDashconnectWebsocketsIntegration"
+                    }
+                  ]
+                ]
+              }
+            }
+          },
+          "SdisconnectWebsocketsRoute": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "RouteKey": "$disconnect",
+              "AuthorizationType": "NONE",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "WebsocketDashdisconnectWebsocketsIntegration"
+                    }
+                  ]
+                ]
+              }
+            }
+          },
+          "SdefaultWebsocketsRoute": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "RouteKey": "$default",
+              "AuthorizationType": "NONE",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "WebsocketDashdefaultWebsocketsIntegration"
+                    }
+                  ]
+                ]
+              }
+            }
+          },
+          "messageWebsocketsRoute": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "RouteKey": "message",
+              "AuthorizationType": "NONE",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "WebsocketDashmessageWebsocketsIntegration"
+                    }
+                  ]
+                ]
+              }
+            }
+          },
+          "locationWebsocketsRoute": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "RouteKey": "location",
+              "AuthorizationType": "NONE",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "WebsocketDashlocationWebsocketsIntegration"
+                    }
+                  ]
+                ]
+              }
+            }
+          },
+          "WebsocketsDeploymentStage": {
+            "Type": "AWS::ApiGatewayV2::Stage",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "StageName": "dev",
+              "Description": "Serverless Websockets",
+              "DeploymentId": {
+                "Ref": "WebsocketsDeploymentFrwMnHKib9bG6XnV08fCAcWK2YcTub6vUg5B65EI"
+              }
+            }
+          },
+          "WebsocketsDeploymentFrwMnHKib9bG6XnV08fCAcWK2YcTub6vUg5B65EI": {
+            "Type": "AWS::ApiGatewayV2::Deployment",
+            "DependsOn": [
+              "SconnectWebsocketsRoute",
+              "SdisconnectWebsocketsRoute",
+              "SdefaultWebsocketsRoute",
+              "messageWebsocketsRoute",
+              "locationWebsocketsRoute"
+            ],
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "Description": "Serverless Websockets"
+            }
+          },
+          "CitrusUsersTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "CitrusUsers",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "ID",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "ID",
+                  "KeyType": "HASH"
+                }
+              ],
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": 5,
+                "WriteCapacityUnits": 5
+              }
+            }
+          },
+          "CitrusLocationsTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "CitrusLocations",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "ID",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "ID",
+                  "KeyType": "HASH"
+                }
+              ],
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": 5,
+                "WriteCapacityUnits": 5
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "serverless-framework-deployments-us-east-1-91978bc0-8d20",
+            "Export": {
+              "Name": "sls-CitrusWebsocket-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "WebsocketDashconnectLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "WebsocketDashconnectLambdaVersionipcXSrcKMSAySw7WJTUrND1K6NF42kl6WP7L6220"
+            },
+            "Export": {
+              "Name": "sls-CitrusWebsocket-dev-WebsocketDashconnectLambdaFunctionQualifiedArn"
+            }
+          },
+          "WebsocketDashdisconnectLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "WebsocketDashdisconnectLambdaVersionOLBDejRxUu94sKZmDhIOcycH4PC0H2aGFJTd6TsQY"
+            },
+            "Export": {
+              "Name": "sls-CitrusWebsocket-dev-WebsocketDashdisconnectLambdaFunctionQualifiedArn"
+            }
+          },
+          "WebsocketDashdefaultLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "WebsocketDashdefaultLambdaVersiondeAc0oDZY7nRTkFYZKJi3qqPrmOMVKxhvxxmuB1crk"
+            },
+            "Export": {
+              "Name": "sls-CitrusWebsocket-dev-WebsocketDashdefaultLambdaFunctionQualifiedArn"
+            }
+          },
+          "WebsocketDashmessageLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "WebsocketDashmessageLambdaVersion0HTUVGUZwg4iMvWN6ucu5MsRmQNGkFhYydyeSpUzg"
+            },
+            "Export": {
+              "Name": "sls-CitrusWebsocket-dev-WebsocketDashmessageLambdaFunctionQualifiedArn"
+            }
+          },
+          "WebsocketDashlocationLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "WebsocketDashlocationLambdaVersioneZQwtWuj7jRCOCm89C5tzjN0q0pO26iBGBXexU8tvmo"
+            },
+            "Export": {
+              "Name": "sls-CitrusWebsocket-dev-WebsocketDashlocationLambdaFunctionQualifiedArn"
+            }
+          },
+          "ServiceEndpointWebsocket": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "wss://",
+                  {
+                    "Ref": "WebsocketsApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/dev"
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-CitrusWebsocket-dev-ServiceEndpointWebsocket"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "custom": {
+      "userTable": "CitrusUsers",
+      "locationTable": "CitrusLocations"
+    },
+    "pluginsData": {},
+    "functions": {
+      "websocket-connect": {
+        "handler": "lambdas/websockets/connect.handler",
+        "events": [
+          {
+            "websocket": {
+              "route": "$connect"
+            }
+          }
+        ],
+        "name": "CitrusWebsocket-dev-websocket-connect",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs22.x",
+        "vpc": {},
+        "versionLogicalId": "WebsocketDashconnectLambdaVersionipcXSrcKMSAySw7WJTUrND1K6NF42kl6WP7L6220"
+      },
+      "websocket-disconnect": {
+        "handler": "lambdas/websockets/disconnect.handler",
+        "events": [
+          {
+            "websocket": {
+              "route": "$disconnect"
+            }
+          }
+        ],
+        "name": "CitrusWebsocket-dev-websocket-disconnect",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs22.x",
+        "vpc": {},
+        "versionLogicalId": "WebsocketDashdisconnectLambdaVersionOLBDejRxUu94sKZmDhIOcycH4PC0H2aGFJTd6TsQY"
+      },
+      "websocket-default": {
+        "handler": "lambdas/websockets/default.handler",
+        "events": [
+          {
+            "websocket": {
+              "route": "$default"
+            }
+          }
+        ],
+        "name": "CitrusWebsocket-dev-websocket-default",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs22.x",
+        "vpc": {},
+        "versionLogicalId": "WebsocketDashdefaultLambdaVersiondeAc0oDZY7nRTkFYZKJi3qqPrmOMVKxhvxxmuB1crk"
+      },
+      "websocket-message": {
+        "handler": "lambdas/websockets/message.handler",
+        "events": [
+          {
+            "websocket": {
+              "route": "message"
+            }
+          }
+        ],
+        "name": "CitrusWebsocket-dev-websocket-message",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs22.x",
+        "vpc": {},
+        "versionLogicalId": "WebsocketDashmessageLambdaVersion0HTUVGUZwg4iMvWN6ucu5MsRmQNGkFhYydyeSpUzg"
+      },
+      "websocket-location": {
+        "handler": "lambdas/websockets/sendLocation.handler",
+        "events": [
+          {
+            "websocket": {
+              "route": "location"
+            }
+          }
+        ],
+        "name": "CitrusWebsocket-dev-websocket-location",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs22.x",
+        "vpc": {},
+        "versionLogicalId": "WebsocketDashlocationLambdaVersioneZQwtWuj7jRCOCm89C5tzjN0q0pO26iBGBXexU8tvmo"
+      }
+    },
+    "resources": {
+      "Resources": {
+        "CitrusUsersTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "Properties": {
+            "TableName": "CitrusUsers",
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "ID",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "ID",
+                "KeyType": "HASH"
+              }
+            ],
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5
+            }
+          }
+        },
+        "CitrusLocationsTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "Properties": {
+            "TableName": "CitrusLocations",
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "ID",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "ID",
+                "KeyType": "HASH"
+              }
+            ],
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5
+            }
+          }
+        }
+      },
+      "Outputs": {}
+    },
+    "configValidationMode": "warn",
+    "serviceFilename": "serverless",
+    "initialServerlessConfig": {
+      "org": "citruswebsocket",
+      "app": "citrus",
+      "service": "CitrusWebsocket",
+      "provider": {
+        "$ref": "$[\"service\"][\"provider\"]"
+      },
+      "custom": {
+        "$ref": "$[\"service\"][\"custom\"]"
+      },
+      "functions": {
+        "$ref": "$[\"service\"][\"functions\"]"
+      },
+      "resources": {
+        "$ref": "$[\"service\"][\"resources\"]"
+      }
+    },
+    "app": "citrus",
+    "appId": null,
+    "org": "citruswebsocket",
+    "orgId": null,
+    "layers": {},
+    "artifact": "C:\\Users\\david\\citrus-backend\\.serverless\\CitrusWebsocket.zip"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/CitrusWebsocket/dev/1744572018127-2025-04-13T19:20:18.127Z",
+    "artifact": "CitrusWebsocket.zip"
+  }
+}
