@@ -20,6 +20,7 @@ provider:
 custom:
     userTable: CitrusUsers
     locationTable: CitrusLocations
+    friendsTable: CitrusFriends
 
 functions:
     websocket-connect:
@@ -66,6 +67,19 @@ resources:
             Type: AWS::DynamoDB::Table
             Properties:
                 TableName: ${self:custom.locationTable}
+                AttributeDefinitions:
+                    - AttributeName: ID
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: ID
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 5
+                    WriteCapacityUnits: 5
+        CitrusFriendsTable:
+            Type: AWS::DynamoDB::Table
+            Properties:
+                TableName: ${self:custom.friendsTable}
                 AttributeDefinitions:
                     - AttributeName: ID
                       AttributeType: S
