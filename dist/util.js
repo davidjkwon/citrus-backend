@@ -1,5 +1,6 @@
-const mongoose = require('mongoose');
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.deleteDocument = deleteDocument;
 async function deleteDocument(model, query) {
     try {
         // get jwt or cid, authenticate first
@@ -8,11 +9,9 @@ async function deleteDocument(model, query) {
             throw new Error('Document not found');
         }
         return result;
-    } catch (error) {
+    }
+    catch (error) {
         throw new Error(`Error deleting document: ${error.message}`);
     }
 }
-
-module.exports = {
-    deleteDocument
-};
+//# sourceMappingURL=util.js.map

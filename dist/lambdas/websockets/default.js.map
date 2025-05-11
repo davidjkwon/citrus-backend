@@ -1,0 +1,1 @@
+{"version":3,"file":"default.js","sourceRoot":"","sources":["../../../lambdas/websockets/default.ts"],"names":[],"mappings":";;;AACA,2DAAmD;AAE5C,MAAM,OAAO,GAAG,KAAK,EAAE,KAA2B,EAAkC,EAAE;IACzF,OAAO,CAAC,GAAG,CAAC,QAAQ,EAAE,KAAK,CAAC,CAAC;IAE7B,OAAO,IAAA,gBAAI,EAAC,EAAE,OAAO,EAAE,SAAS,EAAE,CAAC,CAAC;AACxC,CAAC,CAAC;AAJW,QAAA,OAAO,WAIlB"}
